@@ -57,28 +57,53 @@
     frameImg.src = 'frame.png'; frameImg.onload = draw;
 
     function draw() {
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        if(isLoaded) {
-            ctx.save(); ctx.translate(imgX, imgY); ctx.scale(imgScale, imgScale);
-            ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2); ctx.restore();
-        }
-        ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-        
-        const name = userNameInput.value.toUpperCase();
-        if(name) {
-            let size = 65; ctx.font = `bold ${size}px Georgia`;
-            while(ctx.measureText(name).width > canvas.width * 0.85 && size > 20) { size -= 2; ctx.font = `bold ${size}px Georgia`; }
-            const grad = ctx.createLinearGradient(0, 1200, 0, 1300);
-            grad.addColorStop(0, "#f3cc7a"); grad.addColorStop(0.5, "#c5a059"); grad.addColorStop(1, "#8e6d2b");
-            ctx.fillStyle = grad; ctx.strokeStyle = "black"; ctx.lineWidth = 4;
-            ctx.textAlign = "center"; ctx.strokeText(name, 500, 1280); ctx.fillText(name, 500, 1280);
-        }
-        const cats = Array.from(document.querySelectorAll('.cat-check:checked')).map(c => c.value);
-        if(cats.length > 0) {
-            ctx.fillStyle = "white"; ctx.font = "italic 25px Arial";
-            cats.slice(0, 2).forEach((c, i) => { ctx.fillText(c, 500, 1330 + (i * 35)); });
-        }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 1. Draw Photo
+    if(isLoaded) {
+        ctx.save(); 
+        ctx.translate(imgX, imgY); 
+        ctx.scale(imgScale, imgScale); 
+        ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2); 
+        ctx.restore();
     }
+    
+    // 2. Draw Frame
+    ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+    
+    // 3. Draw Name (Centered on top gold plate)
+    const name = userNameInput.value.toUpperCase();
+    if(name) {
+        let size = 65; ctx.font = `bold ${size}px Georgia`;
+        while(ctx.measureText(name).width > canvas.width * 0.8 && size > 20) { 
+            size -= 2; 
+            ctx.font = `bold ${size}px Georgia`; 
+        }
+        
+        // Gradient adjusted for the top plate (Y=750 to 850)
+        const grad = ctx.createLinearGradient(0, 750, 0, 850);
+        grad.addColorStop(0, "#f3cc7a"); 
+        grad.addColorStop(0.5, "#c5a059"); 
+        grad.addColorStop(1, "#8e6d2b");
+        
+        ctx.fillStyle = grad; 
+        ctx.strokeStyle = "black"; 
+        ctx.lineWidth = 4;
+        ctx.textAlign = "center"; 
+        ctx.strokeText(name, 500, 800); 
+        ctx.fillText(name, 500, 800);
+    }
+    
+    // 4. Draw Categories (Centered on bottom gold plate)
+    const cats = Array.from(document.querySelectorAll('.cat-check:checked')).map(c => c.value);
+    if(cats.length > 0) {
+        ctx.fillStyle = "black"; // Changed to black for readability on gold
+        ctx.font = "bold 30px Arial";
+        ctx.textAlign = "center";
+        // Categories list on the bottom plate (Y=940)
+        ctx.fillText(cats.slice(0, 2).join(" • "), 500, 940);
+    }
+}
 
     upload.onchange = (e) => {
         const reader = new FileReader();
