@@ -3,73 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LensFrame - Custom Trading Cards</title>
+    <title>LensFrame Nominee Creator</title>
     <style>
-        :root { --primary: #007bff; --secondary: #6c757d; --bg: #f0f2f5; }
-        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; background: var(--bg); margin: 0; padding: 15px; }
-        .container { max-width: 500px; width: 100%; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); box-sizing: border-box; }
-        
-        header { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        header h1 { margin: 0; color: #333; font-size: 24px; }
-        
+        :root { --primary: #007bff; --bg: #f4f7f6; }
+        body { font-family: system-ui, -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; background: var(--bg); margin: 0; padding: 15px; }
+        .container { max-width: 450px; width: 100%; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); box-sizing: border-box; }
+        header { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        header h1 { margin: 0; font-size: 22px; color: #333; }
         .controls { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
-        .input-group { display: flex; flex-direction: column; gap: 5px; }
-        label { font-size: 14px; font-weight: bold; color: #555; }
-        
-        input[type="text"], input[type="file"] { padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
-        
+        label { font-size: 13px; font-weight: 700; color: #666; display: block; margin-bottom: 4px; }
+        input[type="text"], input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .zoom-wrap { display: flex; align-items: center; gap: 10px; padding: 5px 0; }
+        #zoomSlider { flex-grow: 1; }
         .btn-group { display: flex; gap: 8px; }
-        button { flex: 1; padding: 12px; cursor: pointer; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; }
-        #resetBtn { background: var(--secondary); }
-        #shareBtn { background: #25d366; }
-
-        .zoom-wrap { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #555; margin: 10px 0; }
-        #zoomSlider { flex-grow: 1; cursor: pointer; }
-
-        .gallery { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; border-top: 1px solid #eee; }
-        .frame-thumb { width: 65px; height: 65px; border: 3px solid #eee; border-radius: 8px; cursor: pointer; object-fit: cover; flex-shrink: 0; }
-        .frame-thumb.active { border-color: var(--primary); }
-
-        .canvas-container { position: relative; width: 100%; aspect-ratio: 1/1; background: #000; border-radius: 10px; overflow: hidden; touch-action: none; margin-top: 10px; }
-        canvas { width: 100%; height: 100%; display: block; cursor: move; }
-        
-        .instructions { text-align: center; font-size: 12px; color: #999; margin-top: 15px; }
+        button { flex: 1; padding: 12px; cursor: pointer; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; }
+        #saveBtn { background: #28a745; }
+        .canvas-container { position: relative; width: 100%; aspect-ratio: 1/1; background: #eee; border-radius: 8px; overflow: hidden; touch-action: none; border: 1px solid #ddd; }
+        canvas { width: 100%; height: 100%; display: block; }
+        .tip { text-align: center; font-size: 11px; color: #999; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>LensFrame</h1>
-    </header>
+    <header><h1>LensFrame Nominee</h1></header>
 
     <div class="controls">
-        <div class="input-group">
-            <label>1. Upload Photo</label>
+        <div>
+            <label>Upload Photo</label>
             <input type="file" id="upload" accept="image/*">
         </div>
-
-        <div class="input-group">
-            <label>2. Nominee Name</label>
-            <input type="text" id="userName" placeholder="Enter name..." maxlength="20">
+        <div>
+            <label>Nominee Name</label>
+            <input type="text" id="userName" placeholder="ENTER NAME..." maxlength="25">
         </div>
-        
         <div class="zoom-wrap">
-            <label>Zoom:</label>
+            <label>Zoom</label>
             <input type="range" id="zoomSlider" min="0.1" max="4" step="0.01" value="1">
         </div>
-
         <div class="btn-group">
-            <button id="resetBtn">Reset</button>
-            <button id="saveBtn">Save</button>
-            <button id="shareBtn">Share</button>
+            <button id="saveBtn">Save Card</button>
+            <button onclick="location.reload()" style="background:#6c757d">Reset</button>
         </div>
-    </div>
-
-    <div class="gallery" id="frameGallery">
-        <img src="frame1.png" class="frame-thumb active" data-src="frame1.png">
-        <img src="frame2.png" class="frame-thumb" data-src="frame2.png">
     </div>
 
     <div class="canvas-container">
         <canvas id="canvas" width="1080" height="1080"></canvas>
+    </div>
+    <p class="tip">Move photo by dragging • Zoom with slider</p>
+</div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const upload = document.getElementById('upload');
+    const zoomSlider = document.getElementById('zoomSlider');
+    const userNameInput = document.getElementById('userName');
+
+    let userImg = new Image();
+    let frameImg = new Image();
+    let isImageLoaded = false;
+
+    // View State
+    let imgX = canvas.width / 2, imgY = canvas.height / 2, imgScale = 1;
+    let isDragging = false, startX, startY;
+
+    // Load the single frame
+    frameImg.src = 'frame.png'; // MUST MATCH FILENAME ON GITHUB
+    frameImg.onload = draw;
+    frameImg.onerror = () => alert("Could not find frame.png! Make sure it is in the same folder.");
+
+    upload.onchange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            userImg.onload = () => { isImageLoaded = true; resetPos(); };
+            userImg.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    userNameInput.oninput = draw;
+    zoomSlider.oninput = (e) => { imgScale = parseFloat(e.target.value); draw(); };
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (isImageLoaded) {
+            ctx.save();
+            ctx.translate(imgX, imgY);
+            ctx.scale(imgScale, imgScale);
+            ctx.drawImage(userImg, -userImg.width / 2, -userImg.height / 2);
+            ctx.restore();
+        }
+        ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+        
+        const name = userNameInput.value.toUpperCase();
+        if (name) {
+            ctx.fillStyle = "white"; 
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 6;
+            ctx.font = "bold 75px sans-serif";
+            ctx.textAlign = "center";
+            ctx.strokeText(name, canvas.width / 2, 940);
+            ctx.fillText(name, canvas.width / 2, 940);
+        }
+    }
+
+    function resetPos() {
+        imgScale = Math.max(canvas.width / userImg.width, canvas.height / userImg.height);
+        imgX = canvas.width / 2; imgY = canvas.height / 2;
+        zoomSlider.value = imgScale;
+        draw();
+    }
+
+    // Interaction Logic
+    const getC = (e) => {
+        const r = canvas.getBoundingClientRect();
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: (cx - r.left) * (canvas.width / r.width), y: (cy - r.top) * (canvas.height / r.height) };
+    };
+    canvas.addEventListener('mousedown', (e) => { if(!isImageLoaded) return; isDragging = true; const c = getC(e); startX = c.x - imgX; startY = c.y - imgY; });
+    window.addEventListener('mousemove', (e) => { if(!isDragging) return; const c = getC(e); imgX = c.x - startX; imgY = c.y - startY; draw(); });
+    window.addEventListener('mouseup', () => isDragging = false);
+    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); if(!isImageLoaded) return; isDragging = true; const c = getC(e); startX = c.x - imgX; startY = c.y - imgY; }, {passive:false});
+    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if(!isDragging) return; const c = getC(e); imgX = c.x - startX; imgY = c.y - startY; draw(); }, {passive:false});
+    canvas.addEventListener('touchend', () => isDragging = false);
+
+    document.getElementById('saveBtn').onclick = () => {
+        const link = document.createElement('a');
+        link.download = 'nominee-card.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    };
+</script>
+</body>
+</html>
