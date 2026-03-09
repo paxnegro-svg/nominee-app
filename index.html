@@ -7,183 +7,88 @@
     <style>
         :root { --gold: #f3cc7a; --dark: #1a1a1a; --bg: #0f0f0f; }
         body { font-family: 'Georgia', serif; display: flex; flex-direction: column; align-items: center; background: var(--bg); color: white; margin: 0; padding: 15px; }
-        .container { max-width: 450px; width: 100%; background: var(--dark); padding: 20px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 10px 50px rgba(0,0,0,0.8); box-sizing: border-box; }
+        .container { max-width: 450px; width: 100%; background: var(--dark); padding: 20px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 10px 50px rgba(0,0,0,0.8); }
         header { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px; }
         header h1 { margin: 0; font-size: 22px; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; }
         .controls { display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; }
         label { font-size: 13px; font-weight: bold; color: var(--gold); margin-bottom: 5px; display: block; }
-        input[type="text"], input[type="file"], select { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 8px; background: #222; color: white; box-sizing: border-box; }
-        
-        /* Scrollable Category List */
+        input[type="text"], input[type="file"] { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 8px; background: #222; color: white; box-sizing: border-box; }
         .cat-box { height: 150px; overflow-y: auto; background: #222; border: 1px solid #444; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .cat-item { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #ccc; cursor: pointer; }
-        
+        .cat-item { font-size: 12px; color: #ccc; cursor: pointer; }
         .zoom-wrap { display: flex; align-items: center; gap: 10px; }
         #zoomSlider { flex-grow: 1; accent-color: var(--gold); }
         .btn-group { display: flex; gap: 10px; }
         button { flex: 1; padding: 14px; cursor: pointer; background: var(--gold); color: black; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; }
         #saveBtn { background: #c5a059; }
-        .canvas-container { position: relative; width: 100%; aspect-ratio: 2/3; background: #000; border-radius: 8px; overflow: hidden; touch-action: none; border: 1px solid var(--gold); }
+        .canvas-container { position: relative; width: 100%; aspect-ratio: 2/3; background: #000; border-radius: 8px; overflow: hidden; border: 1px solid var(--gold); }
         canvas { width: 100%; height: 100%; display: block; }
-        .tip { text-align: center; font-size: 11px; color: #777; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header><h1>Nominee Creator</h1></header>
-
     <div class="controls">
-        <div>
-            <label>1. Photo</label>
-            <input type="file" id="upload" accept="image/*">
-        </div>
-        <div>
-            <label>2. Name</label>
-            <input type="text" id="userName" placeholder="NOMINEE NAME" maxlength="25">
-        </div>
-        <div>
-            <label>3. Nomination Category</label>
-            <div class="cat-box" id="catBox">
-                </div>
-        </div>
-        <div class="zoom-wrap">
-            <label>Zoom</label>
-            <input type="range" id="zoomSlider" min="0.1" max="4" step="0.01" value="1">
-        </div>
+        <div><label>1. Photo</label><input type="file" id="upload" accept="image/*"></div>
+        <div><label>2. Name</label><input type="text" id="userName" placeholder="NOMINEE NAME" maxlength="25"></div>
+        <div><label>3. Select Category</label><div class="cat-box" id="catBox"></div></div>
+        <div class="zoom-wrap"><label>Zoom</label><input type="range" id="zoomSlider" min="0.1" max="4" step="0.01" value="1"></div>
         <div class="btn-group">
-            <button id="saveBtn">Download Card</button>
-            <button onclick="location.reload()" style="background:#444; color: white;">Reset</button>
+            <button id="saveBtn">Download</button>
+            <button onclick="location.reload()" style="background:#444; color:white;">Reset</button>
         </div>
     </div>
-
-    <div class="canvas-container">
-        <canvas id="canvas" width="1000" height="1500"></canvas>
-    </div>
+    <div class="canvas-container"><canvas id="canvas" width="1000" height="1500"></canvas></div>
 </div>
 
 <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const upload = document.getElementById('upload');
-    const zoomSlider = document.getElementById('zoomSlider');
-    const userNameInput = document.getElementById('userName');
-    const catBox = document.getElementById('catBox');
+    const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+    const upload = document.getElementById('upload'), zoomSlider = document.getElementById('zoomSlider');
+    const userNameInput = document.getElementById('userName'), catBox = document.getElementById('catBox');
+    
+    const categories = ["URBAN X HOTTIE", "URBAN X STUD", "ORGASMIC ORALIST", "TALENTED TONGUE", "MOST AMAZING ASS", "MOST BEAUTIFUL BREAST", "MOST HUNG MALE STAR", "SEXIEST BBW STAR", "SEXIEST TRANS STAR", "MOST POPULAR BBW STAR", "MOST POPULAR TRANS STAR", "HOTTEST FETISH STAR", "HOTTEST INKED STAR FEMALE", "HOTTEST INKED STAR MALE", "MOST POPULAR POV MALE STAR", "RISING STAR FEMALE", "BEST MALE NEWCOMER", "MOST POPULAR PR COMPANY", "MOST POPULAR PODCAST/RADIO SHOW", "MOST POPULAR TALENT AGENCY", "MOST SUPPORTIVE SPONSOR", "MOST POPULAR CONTENT CREATOR PLATFORM", "MOST POPULAR WEB CAM COMPANY", "MOST POPULAR WEB CAM MODEL", "SOCIAL MEDIA STAR (MALE)", "SOCIAL MEDIA STAR (FEMALE)", "FAN FAVORITE MALE CREATOR", "FAN FAVORITE FEMALE CREATOR", "FAN FAVORITE BBW CREATOR", "FAN FAVORITE TRANS CREATOR", "FAN FAVORITE GAY CREATOR", "MOST POPULAR NOVELTY COMPANY", "BEST EVENT PHOTOGRAPHER", "FAN FAVORITE PRO-AM MALE", "FAN FAVORITE PRO-AM FEMALE", "MOST POPULAR PRO-AM STUDIO", "BEST NEW ALT MODEL", "ALT MODEL OF THE YEAR", "SPECTACULAR SQUIRTING STAR", "FEMALE PERFORMER OF THE YEAR", "MALE PERFORMER OF THE YEAR", "ANAL PERFORMER OF THE YEAR", "GAY PERFORMER OF THE YEAR", "TRANSGENDER PERFORMER OF THE YEAR", "MILF PERFORMER OF THE YEAR", "TRANS MASCULINE PERFORMER", "PANSEXUAL PERFORMER OF THE YEAR", "FAN FAVORITE DIRECTOR", "MOST POPULAR NEW STUDIO", "MOST POPULAR STUDIO", "BEST ACTRESS", "BEST ACTOR", "BEST COUPLE SEX SCENE", "BEST GIRL GIRL SCENE", "BEST GANG BANG SCENE", "BEST ORAL SCENE", "INDUSTRY FAVORITE COUPLE", "MR. GOOD STROKE", "MISS PRETTY KITTY", "PORN STAR-NEXT-DOOR", "MUSIC ARTIST, MALE", "MUSIC ARTIST, FEMALE"];
 
-    const categories = [
-        "URBAN X HOTTIE", "URBAN X STUD", "ORGASMIC ORALIST", "TALENTED TONGUE", "MOST AMAZING ASS",
-        "MOST BEAUTIFUL BREAST", "MOST HUNG MALE STAR", "SEXIEST BBW STAR", "SEXIEST TRANS STAR",
-        "MOST POPULAR BBW STAR", "MOST POPULAR TRANS STAR", "HOTTEST FETISH STAR", "HOTTEST INKED STAR FEMALE",
-        "HOTTEST INKED STAR MALE", "MOST POPULAR POV MALE STAR", "RISING STAR FEMALE", "BEST MALE NEWCOMER",
-        "MOST POPULAR PR COMPANY", "MOST POPULAR PODCAST/RADIO SHOW", "MOST POPULAR TALENT AGENCY",
-        "MOST SUPPORTIVE SPONSOR", "MOST POPULAR CONTENT CREATOR PLATFORM", "MOST POPULAR WEB CAM COMPANY",
-        "MOST POPULAR WEB CAM MODEL", "SOCIAL MEDIA STAR (MALE)", "SOCIAL MEDIA STAR (FEMALE)",
-        "FAN FAVORITE MALE CREATOR", "FAN FAVORITE FEMALE CREATOR", "FAN FAVORITE BBW CREATOR",
-        "FAN FAVORITE TRANS CREATOR", "FAN FAVORITE GAY CREATOR", "MOST POPULAR NOVELTY COMPANY",
-        "BEST EVENT PHOTOGRAPHER", "FAN FAVORITE PRO-AM MALE", "FAN FAVORITE PRO-AM FEMALE",
-        "MOST POPULAR PRO-AM STUDIO", "BEST NEW ALT MODEL", "ALT MODEL OF THE YEAR", "SPECTACULAR SQUIRTING STAR",
-        "FEMALE PERFORMER OF THE YEAR", "MALE PERFORMER OF THE YEAR", "ANAL PERFORMER OF THE YEAR",
-        "GAY PERFORMER OF THE YEAR", "TRANSGENDER PERFORMER OF THE YEAR", "MILF PERFORMER OF THE YEAR",
-        "TRANS MASCULINE PERFORMER", "PANSEXUAL PERFORMER OF THE YEAR", "FAN FAVORITE DIRECTOR",
-        "MOST POPULAR NEW STUDIO", "MOST POPULAR STUDIO", "BEST ACTRESS", "BEST ACTOR",
-        "BEST COUPLE SEX SCENE", "BEST GIRL GIRL SCENE", "BEST GANG BANG SCENE", "BEST ORAL SCENE",
-        "INDUSTRY FAVORITE COUPLE", "MR. GOOD STROKE", "MISS PRETTY KITTY", "PORN STAR-NEXT-DOOR",
-        "MUSIC ARTIST, MALE", "MUSIC ARTIST, FEMALE"
-    ];
-
-    // Populate Category List
     categories.forEach(cat => {
-        const label = document.createElement('label');
-        label.className = 'cat-item';
-        label.innerHTML = `<input type="checkbox" class="cat-check" value="${cat}"> ${cat}`;
-        catBox.appendChild(label);
+        catBox.innerHTML += `<label class="cat-item"><input type="checkbox" class="cat-check" value="${cat}"> ${cat}</label>`;
     });
 
-    let userImg = new Image();
-    let frameImg = new Image();
-    let isImageLoaded = false;
-    let imgX = canvas.width / 2, imgY = canvas.height / 2, imgScale = 1;
-    let isDragging = false, startX, startY;
-
-    frameImg.src = 'frame.png'; 
-    frameImg.onload = draw;
-
-    upload.onchange = (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            userImg.onload = () => { isImageLoaded = true; resetPos(); };
-            userImg.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-    };
-
-    userNameInput.oninput = draw;
-    zoomSlider.oninput = (e) => { imgScale = parseFloat(e.target.value); draw(); };
-    catBox.addEventListener('change', draw);
+    let userImg = new Image(), frameImg = new Image(), isLoaded = false;
+    let imgX = canvas.width/2, imgY = canvas.height/2, imgScale = 1;
+    frameImg.src = 'frame.png'; frameImg.onload = draw;
 
     function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (isImageLoaded) {
-            ctx.save();
-            ctx.translate(imgX, imgY);
-            ctx.scale(imgScale, imgScale);
-            ctx.drawImage(userImg, -userImg.width / 2, -userImg.height / 2);
-            ctx.restore();
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        if(isLoaded) {
+            ctx.save(); ctx.translate(imgX, imgY); ctx.scale(imgScale, imgScale);
+            ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2); ctx.restore();
         }
         ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
         
         const name = userNameInput.value.toUpperCase();
-        if (name) {
-            ctx.fillStyle = "#f3cc7a"; 
-            ctx.strokeStyle = "black";
-            ctx.lineWidth = 6;
-            ctx.font = "bold 60px Georgia, serif";
-            ctx.textAlign = "center";
-            ctx.strokeText(name, canvas.width / 2, 1260);
-            ctx.fillText(name, canvas.width / 2, 1260);
+        if(name) {
+            let size = 65; ctx.font = `bold ${size}px Georgia`;
+            while(ctx.measureText(name).width > canvas.width * 0.85 && size > 20) { size -= 2; ctx.font = `bold ${size}px Georgia`; }
+            const grad = ctx.createLinearGradient(0, 1200, 0, 1300);
+            grad.addColorStop(0, "#f3cc7a"); grad.addColorStop(0.5, "#c5a059"); grad.addColorStop(1, "#8e6d2b");
+            ctx.fillStyle = grad; ctx.strokeStyle = "black"; ctx.lineWidth = 4;
+            ctx.textAlign = "center"; ctx.strokeText(name, 500, 1280); ctx.fillText(name, 500, 1280);
         }
-
         const cats = Array.from(document.querySelectorAll('.cat-check:checked')).map(c => c.value);
-        if (cats.length > 0) {
-            ctx.fillStyle = "white";
-            ctx.font = "italic 28px Arial, sans-serif";
-            // Simple word wrap for multiple categories
-            let yPos = 1320;
-            cats.forEach((c, index) => {
-                if(index < 2) { // Limit display to 2 categories to avoid clutter
-                    ctx.strokeText(c, canvas.width / 2, yPos);
-                    ctx.fillText(c, canvas.width / 2, yPos);
-                    yPos += 40;
-                }
-            });
+        if(cats.length > 0) {
+            ctx.fillStyle = "white"; ctx.font = "italic 25px Arial";
+            cats.slice(0, 2).forEach((c, i) => { ctx.fillText(c, 500, 1330 + (i * 35)); });
         }
     }
 
-    function resetPos() {
-        imgScale = Math.max(canvas.width / userImg.width, canvas.height / userImg.height);
-        imgX = canvas.width / 2; imgY = canvas.height / 2;
-        zoomSlider.value = imgScale;
-        draw();
-    }
-
-    const getC = (e) => {
-        const r = canvas.getBoundingClientRect();
-        const cx = e.touches ? e.touches[0].clientX : e.clientX;
-        const cy = e.touches ? e.touches[0].clientY : e.clientY;
-        return { x: (cx - r.left) * (canvas.width / r.width), y: (cy - r.top) * (canvas.height / r.height) };
+    upload.onchange = (e) => {
+        const reader = new FileReader();
+        reader.onload = (event) => { userImg.onload = () => { isLoaded = true; draw(); }; userImg.src = event.target.result; };
+        reader.readAsDataURL(e.target.files[0]);
     };
-    canvas.addEventListener('mousedown', (e) => { if(!isImageLoaded) return; isDragging = true; const c = getC(e); startX = c.x - imgX; startY = c.y - imgY; });
-    window.addEventListener('mousemove', (e) => { if(!isDragging) return; const c = getC(e); imgX = c.x - startX; imgY = c.y - startY; draw(); });
-    window.addEventListener('mouseup', () => isDragging = false);
-    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); if(!isImageLoaded) return; isDragging = true; const c = getC(e); startX = c.x - imgX; startY = c.y - imgY; }, {passive:false});
-    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if(!isDragging) return; const c = getC(e); imgX = c.x - startX; imgY = c.y - startY; draw(); }, {passive:false});
-    
+    catBox.onchange = draw;
+    zoomSlider.oninput = (e) => { imgScale = e.target.value; draw(); };
     document.getElementById('saveBtn').onclick = () => {
-        const link = document.createElement('a');
-        link.download = 'UrbanX-Nominee.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+        const link = document.createElement('a'); link.download = 'Nominee.png'; link.href = canvas.toDataURL('image/png'); link.click();
     };
 </script>
 </body>
