@@ -59,7 +59,7 @@
     function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 1. Draw Photo
+    // 1. Draw the user's photo FIRST so it's at the bottom
     if(isLoaded) {
         ctx.save(); 
         ctx.translate(imgX, imgY); 
@@ -68,39 +68,34 @@
         ctx.restore();
     }
     
-    // 2. Draw Frame
+    // 2. Draw the frame SECOND
     ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
     
-    // 3. Draw Name (Centered on top gold plate)
+    // 3. Draw the Name THIRD (Top layer)
     const name = userNameInput.value.toUpperCase();
     if(name) {
-        let size = 65; ctx.font = `bold ${size}px Georgia`;
+        let size = 65; 
+        ctx.font = `bold ${size}px Georgia`;
         while(ctx.measureText(name).width > canvas.width * 0.8 && size > 20) { 
-            size -= 2; 
-            ctx.font = `bold ${size}px Georgia`; 
+            size -= 2; ctx.font = `bold ${size}px Georgia`; 
         }
         
-        // Gradient adjusted for the top plate (Y=750 to 850)
         const grad = ctx.createLinearGradient(0, 750, 0, 850);
-        grad.addColorStop(0, "#f3cc7a"); 
-        grad.addColorStop(0.5, "#c5a059"); 
-        grad.addColorStop(1, "#8e6d2b");
+        grad.addColorStop(0, "#f3cc7a"); grad.addColorStop(0.5, "#c5a059"); grad.addColorStop(1, "#8e6d2b");
         
         ctx.fillStyle = grad; 
-        ctx.strokeStyle = "black"; 
-        ctx.lineWidth = 4;
+        ctx.strokeStyle = "black"; ctx.lineWidth = 4;
         ctx.textAlign = "center"; 
         ctx.strokeText(name, 500, 800); 
         ctx.fillText(name, 500, 800);
     }
     
-    // 4. Draw Categories (Centered on bottom gold plate)
+    // 4. Draw Categories FOURTH (Top layer)
     const cats = Array.from(document.querySelectorAll('.cat-check:checked')).map(c => c.value);
     if(cats.length > 0) {
-        ctx.fillStyle = "black"; // Changed to black for readability on gold
+        ctx.fillStyle = "black"; 
         ctx.font = "bold 30px Arial";
         ctx.textAlign = "center";
-        // Categories list on the bottom plate (Y=940)
         ctx.fillText(cats.slice(0, 2).join(" • "), 500, 940);
     }
 }
@@ -117,4 +112,5 @@
     };
 </script>
 </body>
+
 </html>
