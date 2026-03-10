@@ -21,7 +21,13 @@
         button { flex: 1; padding: 14px; cursor: pointer; background: var(--gold); color: black; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; }
         #saveBtn { background: #c5a059; }
         .canvas-container { position: relative; width: 100%; aspect-ratio: 2/3; background: #000; border-radius: 8px; overflow: hidden; border: 1px solid var(--gold); }
-        canvas { width: 100%; height: 100%; display: block; }
+      canvas { 
+    width: 100%; 
+    height: 100%; 
+    display: block; 
+    touch-action: none; /* Prevents the phone from scrolling while you drag the photo */
+    -webkit-user-select: none; /* Prevents text selection popups on iPhone */
+}
     </style>
 </head>
 <body>
@@ -120,6 +126,7 @@
 </body>
 
 </html>
+
 
 
 
