@@ -59,7 +59,7 @@
     function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 1. Draw Photo (Bottom Layer)
+    // 1. Photo (Bottom)
     if(isLoaded) {
         ctx.save(); 
         ctx.translate(imgX, imgY); 
@@ -68,43 +68,42 @@
         ctx.restore();
     }
     
-    // 2. Draw Frame (Middle Layer)
+    // 2. Frame (Middle)
     ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
     
-    // 3. Draw Name (Top Layer - Aligned to the first gold bar)
+    // 3. Name (Top - Aligned to the top gold plate)
     const name = userNameInput.value.toUpperCase();
     if(name) {
         let size = 65; 
-        ctx.font = `bold ${size}px Georgia`;
-        // Auto-shrink logic for long names
+        ctx.font = `bold ${size}px Georgia, serif`;
         while(ctx.measureText(name).width > canvas.width * 0.8 && size > 20) { 
-            size -= 2; ctx.font = `bold ${size}px Georgia`; 
+            size -= 2; ctx.font = `bold ${size}px Georgia, serif`; 
         }
         
-        // Metallic Gradient for the Name
+        // Gradient for the name bar area
         const grad = ctx.createLinearGradient(0, 1050, 0, 1150);
         grad.addColorStop(0, "#f3cc7a"); grad.addColorStop(0.5, "#c5a059"); grad.addColorStop(1, "#8e6d2b");
         
         ctx.fillStyle = grad; 
         ctx.strokeStyle = "black"; ctx.lineWidth = 4;
         ctx.textAlign = "center"; 
+        ctx.textBaseline = "middle"; // Helps with Apple alignment
         
-        // --- POSITION: Centered on the TOP gold bar ---
-        ctx.strokeText(name, 500, 1125); 
-        ctx.fillText(name, 500, 1125);
+        // Y=1115 is roughly the center of your top gold bar
+        ctx.strokeText(name, 500, 1115); 
+        ctx.fillText(name, 500, 1115);
     }
     
-    // 4. Draw Categories (Top Layer - Aligned to the bottom gold bar)
+    // 4. Categories (Top - Aligned to the bottom bar)
     const cats = Array.from(document.querySelectorAll('.cat-check:checked')).map(c => c.value);
     if(cats.length > 0) {
-        // Black text provides the best contrast on the solid gold bar
         ctx.fillStyle = "black"; 
-        ctx.font = "bold 30px Arial";
+        ctx.font = "bold 32px Arial, sans-serif";
         ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         
-        // --- POSITION: Centered on the BOTTOM gold bar ---
-        // We join them with a dot to keep it on one line
-        ctx.fillText(cats.slice(0, 2).join(" • "), 500, 1400);
+        // Y=1375 is the center of your bottom solid gold bar
+        ctx.fillText(cats.slice(0, 2).join(" • "), 500, 1375);
     }
 }
     upload.onchange = (e) => {
@@ -121,6 +120,7 @@
 </body>
 
 </html>
+
 
 
 
