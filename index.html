@@ -6,26 +6,17 @@
     <title>Urban X Awards - Nominee Creator</title>
     <style>
         :root { --gold: #f3cc7a; --dark: #1a1a1a; --bg: #0f0f0f; }
-        /* Prevent the whole page from bouncing on iPhone */
         html, body { overflow: hidden; position: fixed; width: 100%; height: 100%; }
         body { font-family: 'Georgia', serif; display: flex; flex-direction: column; align-items: center; background: var(--bg); color: white; margin: 0; padding: 10px; box-sizing: border-box; }
-        
         .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; height: 100%; }
-        
         .controls { background: var(--dark); padding: 12px; border-radius: 12px; border: 1px solid #333; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
-        
         label { font-size: 11px; font-weight: bold; color: var(--gold); text-transform: uppercase; }
-        input[type="text"], input[type="file"] { width: 100%; padding: 8px; border: 1px solid #444; border-radius: 6px; background: #222; color: white; font-size: 14px; box-sizing: border-box; }
-        
-        .cat-box { height: 80px; overflow-y: auto; background: #222; border: 1px solid #444; border-radius: 6px; padding: 8px; }
-        .cat-item { font-size: 11px; color: #ccc; display: block; margin-bottom: 4px; }
-        
-        /* The Canvas Container now scales to fit the remaining screen space */
+        input[type="text"], input[type="file"], select { width: 100%; padding: 8px; border: 1px solid #444; border-radius: 6px; background: #222; color: white; font-size: 14px; box-sizing: border-box; }
         .canvas-container { flex-grow: 1; position: relative; width: 100%; overflow: hidden; border: 1px solid var(--gold); background: #000; display: flex; justify-content: center; align-items: flex-start; }
-        
         canvas { max-width: 100%; max-height: 100%; object-fit: contain; touch-action: none; -webkit-user-select: none; }
-        
-        #saveBtn { padding: 12px; background: var(--gold); border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: black; margin-top: 5px; }
+        button { padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        #saveBtn { background: var(--gold); color: black; }
+        #fullScreenBtn { background: #444; color: white; }
     </style>
 </head>
 <body>
@@ -36,13 +27,11 @@
             <div style="flex:1;"><label>Photo</label><input type="file" id="upload" accept="image/*"></div>
             <div style="flex:1;"><label>Name</label><input type="text" id="userName" placeholder="NAME" maxlength="25"></div>
         </div>
-        
         <label>Zoom Photo</label>
-<input type="range" id="zoomSlider" min="0.1" max="3" step="0.05" value="1">
+        <input type="range" id="zoomSlider" min="0.1" max="3" step="0.05" value="1">
         <label>Nomination Category</label>
-<select id="catDropdown" style="width:100%; padding:10px; background:#222; color:white; border:1px solid #444; border-radius:6px; margin-bottom:10px;">
-    <option value="">-- Select a Category --</option>
-    </select>
+        <select id="catDropdown"><option value="">-- Select a Category --</option></select>
+        <button id="fullScreenBtn">OPEN FULL SCREEN (FOR DOWNLOAD)</button>
         <button id="saveBtn">DOWNLOAD NOMINEE CARD</button>
     </div>
     
@@ -54,16 +43,12 @@
 <script>
     const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
     const upload = document.getElementById('upload'), userNameInput = document.getElementById('userName');
-    const zoomSlider = document.getElementById('zoomSlider');
-    const catDropdown = document.getElementById('catDropdown'); // Targeting your new dropdown
+    const zoomSlider = document.getElementById('zoomSlider'), catDropdown = document.getElementById('catDropdown');
     
     const categories = ["URBAN X HOTTIE", "URBAN X STUD", "ORGASMIC ORALIST", "TALENTED TONGUE", "MOST AMAZING ASS", "MOST BEAUTIFUL BREAST", "MOST HUNG MALE STAR", "SEXIEST BBW STAR", "SEXIEST TRANS STAR", "MOST POPULAR BBW STAR", "MOST POPULAR TRANS STAR", "HOTTEST FETISH STAR", "HOTTEST INKED STAR FEMALE", "HOTTEST INKED STAR MALE", "MOST POPULAR POV MALE STAR", "RISING STAR FEMALE", "BEST MALE NEWCOMER", "MOST POPULAR PR COMPANY", "MOST POPULAR PODCAST/RADIO SHOW", "MOST POPULAR TALENT AGENCY", "MOST SUPPORTIVE SPONSOR", "MOST POPULAR CONTENT CREATOR PLATFORM", "MOST POPULAR WEB CAM COMPANY", "MOST POPULAR WEB CAM MODEL", "SOCIAL MEDIA STAR (MALE)", "SOCIAL MEDIA STAR (FEMALE)", "FAN FAVORITE MALE CREATOR", "FAN FAVORITE FEMALE CREATOR", "FAN FAVORITE BBW CREATOR", "FAN FAVORITE TRANS CREATOR", "FAN FAVORITE GAY CREATOR", "MOST POPULAR NOVELTY COMPANY", "BEST EVENT PHOTOGRAPHER", "FAN FAVORITE PRO-AM MALE", "FAN FAVORITE PRO-AM FEMALE", "MOST POPULAR PRO-AM STUDIO", "BEST NEW ALT MODEL", "ALT MODEL OF THE YEAR", "SPECTACULAR SQUIRTING STAR", "FEMALE PERFORMER OF THE YEAR", "MALE PERFORMER OF THE YEAR", "ANAL PERFORMER OF THE YEAR", "GAY PERFORMER OF THE YEAR", "TRANSGENDER PERFORMER OF THE YEAR", "MILF PERFORMER OF THE YEAR", "TRANS MASCULINE PERFORMER", "PANSEXUAL PERFORMER OF THE YEAR", "FAN FAVORITE DIRECTOR", "MOST POPULAR NEW STUDIO", "MOST POPULAR STUDIO", "BEST ACTRESS", "BEST ACTOR", "BEST COUPLE SEX SCENE", "BEST GIRL GIRL SCENE", "BEST GANG BANG SCENE", "BEST ORAL SCENE", "INDUSTRY FAVORITE COUPLE", "MR. GOOD STROKE", "MISS PRETTY KITTY", "PORN STAR-NEXT-DOOR", "MUSIC ARTIST, MALE", "MUSIC ARTIST, FEMALE"];
 
-    // Populate Dropdown
     categories.forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat;
-        opt.textContent = cat;
+        const opt = document.createElement('option'); opt.value = cat; opt.textContent = cat;
         catDropdown.appendChild(opt);
     });
 
@@ -75,20 +60,12 @@
 
     function draw() {
         ctx.clearRect(0,0,1000,1500);
-        
-        // 1. Photo
         if(isLoaded) {
-            ctx.save(); 
-            ctx.translate(imgX, imgY); 
-            ctx.scale(imgScale, imgScale); 
-            ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2); 
-            ctx.restore();
+            ctx.save(); ctx.translate(imgX, imgY); ctx.scale(imgScale, imgScale);
+            ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2); ctx.restore();
         }
-        
-        // 2. Frame
         ctx.drawImage(frameImg, 0, 0, 1000, 1500);
         
-        // 3. Name
         const name = userNameInput.value.toUpperCase();
         if(name) {
             let size = 65; ctx.font = `bold ${size}px Georgia`;
@@ -99,19 +76,14 @@
             ctx.textAlign = "center"; ctx.textBaseline = "middle";
             ctx.strokeText(name, 500, 1125); ctx.fillText(name, 500, 1125);
         }
-        
-        // 4. Category (Dropdown)
         const selectedCat = catDropdown.value;
         if(selectedCat) {
-            ctx.fillStyle = "white"; 
-            ctx.font = "bold 34px Arial";
-            ctx.textAlign = "center"; 
-            ctx.textBaseline = "middle";
+            ctx.fillStyle = "white"; ctx.font = "bold 34px Arial";
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
             ctx.fillText(selectedCat, 500, 1378);
         }
     }
 
-    // Event Listeners
     upload.onchange = (e) => {
         const r = new FileReader();
         r.onload = (ev) => { userImg.onload = () => { isLoaded = true; draw(); }; userImg.src = ev.target.result; };
@@ -119,10 +91,9 @@
     };
     
     zoomSlider.oninput = (e) => { imgScale = parseFloat(e.target.value); draw(); };
-    catDropdown.onchange = draw; // Update when dropdown changes
+    catDropdown.onchange = draw;
     userNameInput.oninput = draw;
 
-    // Drag Logic (stays the same)
     let isDragging = false, lastX, lastY;
     function getCoords(e) {
         const rect = canvas.getBoundingClientRect();
@@ -130,6 +101,7 @@
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         return { x: (clientX - rect.left) * (canvas.width / rect.width), y: (clientY - rect.top) * (canvas.height / rect.height) };
     }
+
     function startDrag(e) { isDragging = true; const coords = getCoords(e); lastX = coords.x; lastY = coords.y; }
     function moveDrag(e) {
         if (!isDragging) return;
@@ -138,6 +110,7 @@
         lastX = coords.x; lastY = coords.y;
         draw();
     }
+
     canvas.addEventListener('mousedown', startDrag);
     window.addEventListener('mousemove', moveDrag);
     window.addEventListener('mouseup', () => isDragging = false);
@@ -146,16 +119,12 @@
     canvas.addEventListener('touchend', () => isDragging = false);
 
     document.getElementById('saveBtn').onclick = () => {
-        const link = document.createElement('a'); link.download = 'Nominee.png'; link.href = canvas.toDataURL('image/png'); link.click();
+        const link = document.createElement('a'); 
+        link.download = 'Nominee.png'; link.href = canvas.toDataURL('image/png'); link.click();
+    };
+    document.getElementById('fullScreenBtn').onclick = () => {
+        window.open('https://paxnegro-svg.github.io/nominee-app/', '_blank');
     };
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
