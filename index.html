@@ -58,7 +58,49 @@
     
     const categories = ["URBAN X HOTTIE", "URBAN X STUD", "ORGASMIC ORALIST", "TALENTED TONGUE", "MOST AMAZING ASS", "MOST BEAUTIFUL BREAST", "MOST HUNG MALE STAR", "SEXIEST BBW STAR", "SEXIEST TRANS STAR", "MOST POPULAR BBW STAR", "MOST POPULAR TRANS STAR", "HOTTEST FETISH STAR", "HOTTEST INKED STAR FEMALE", "HOTTEST INKED STAR MALE", "MOST POPULAR POV MALE STAR", "RISING STAR FEMALE", "BEST MALE NEWCOMER", "MOST POPULAR PR COMPANY", "MOST POPULAR PODCAST/RADIO SHOW", "MOST POPULAR TALENT AGENCY", "MOST SUPPORTIVE SPONSOR", "MOST POPULAR CONTENT CREATOR PLATFORM", "MOST POPULAR WEB CAM COMPANY", "MOST POPULAR WEB CAM MODEL", "SOCIAL MEDIA STAR (MALE)", "SOCIAL MEDIA STAR (FEMALE)", "FAN FAVORITE MALE CREATOR", "FAN FAVORITE FEMALE CREATOR", "FAN FAVORITE BBW CREATOR", "FAN FAVORITE TRANS CREATOR", "FAN FAVORITE GAY CREATOR", "MOST POPULAR NOVELTY COMPANY", "BEST EVENT PHOTOGRAPHER", "FAN FAVORITE PRO-AM MALE", "FAN FAVORITE PRO-AM FEMALE", "MOST POPULAR PRO-AM STUDIO", "BEST NEW ALT MODEL", "ALT MODEL OF THE YEAR", "SPECTACULAR SQUIRTING STAR", "FEMALE PERFORMER OF THE YEAR", "MALE PERFORMER OF THE YEAR", "ANAL PERFORMER OF THE YEAR", "GAY PERFORMER OF THE YEAR", "TRANSGENDER PERFORMER OF THE YEAR", "MILF PERFORMER OF THE YEAR", "TRANS MASCULINE PERFORMER", "PANSEXUAL PERFORMER OF THE YEAR", "FAN FAVORITE DIRECTOR", "MOST POPULAR NEW STUDIO", "MOST POPULAR STUDIO", "BEST ACTRESS", "BEST ACTOR", "BEST COUPLE SEX SCENE", "BEST GIRL GIRL SCENE", "BEST GANG BANG SCENE", "BEST ORAL SCENE", "INDUSTRY FAVORITE COUPLE", "MR. GOOD STROKE", "MISS PRETTY KITTY", "PORN STAR-NEXT-DOOR", "MUSIC ARTIST, MALE", "MUSIC ARTIST, FEMALE"];
 
-    categories.forEach(cat => { catBox.innerHTML += `<label class="cat-item"><input type="checkbox" class="cat-check" value="${cat}"> ${cat}</label>`; });
+    // Replace your old categories population loop with this:
+const catDropdown = document.getElementById('catDropdown');
+categories.forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    catDropdown.appendChild(opt);
+});
+
+// Update the drawing logic to grab the value from the dropdown
+function draw() {
+    ctx.clearRect(0,0,1000,1500);
+    if(isLoaded) {
+        ctx.save(); ctx.translate(imgX, imgY); ctx.scale(imgScale, imgScale);
+        ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2); ctx.restore();
+    }
+    ctx.drawImage(frameImg, 0, 0, 1000, 1500);
+    
+    // Draw Name
+    const name = userNameInput.value.toUpperCase();
+    if(name) {
+        let size = 65; ctx.font = `bold ${size}px Georgia`;
+        while(ctx.measureText(name).width > 800 && size > 20) { size -= 2; ctx.font = `bold ${size}px Georgia`; }
+        const grad = ctx.createLinearGradient(0, 1050, 0, 1180);
+        grad.addColorStop(0, "#f3cc7a"); grad.addColorStop(0.5, "#c5a059"); grad.addColorStop(1, "#8e6d2b");
+        ctx.fillStyle = grad; ctx.strokeStyle = "black"; ctx.lineWidth = 4;
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.strokeText(name, 500, 1125); ctx.fillText(name, 500, 1125);
+    }
+
+    // Draw Category from Dropdown
+    const selectedCat = catDropdown.value;
+    if(selectedCat) {
+        ctx.fillStyle = "white"; 
+        ctx.font = "bold 34px Arial";
+        ctx.textAlign = "center"; 
+        ctx.textBaseline = "middle";
+        ctx.fillText(selectedCat, 500, 1378);
+    }
+}
+
+// Add event listener
+catDropdown.onchange = draw;
 
     let userImg = new Image(), frameImg = new Image(), isLoaded = false;
     let imgX = 500, imgY = 600, imgScale = 1;
@@ -145,6 +187,7 @@
 </script>
 </body>
 </html>
+
 
 
 
