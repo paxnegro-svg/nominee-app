@@ -90,8 +90,8 @@
         ctx.textAlign = "center"; 
         
         // --- POSITION: Centered on the TOP gold bar ---
-        ctx.strokeText(name, 950, 1150); 
-        ctx.fillText(name, 1125, 1125);
+        ctx.strokeText(name, 950, 1125); 
+        ctx.fillText(name, 950, 1125);
     }
     
     // 4. Draw Categories (Top Layer - Aligned to the bottom gold bar)
@@ -104,7 +104,7 @@
         
         // --- POSITION: Centered on the BOTTOM gold bar ---
         // We join them with a dot to keep it on one line
-        ctx.fillText(cats.slice(0, 2).join(" • "), 500, 1375);
+        ctx.fillText(cats.slice(0, 2).join(" • "), 500, 1400);
     }
 }
     upload.onchange = (e) => {
@@ -121,6 +121,7 @@
 </body>
 
 </html>
+
 
 
 
