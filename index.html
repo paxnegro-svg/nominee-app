@@ -59,7 +59,7 @@
     function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 1. Draw the user's photo FIRST so it's at the bottom
+    // 1. Draw Photo (Bottom Layer)
     if(isLoaded) {
         ctx.save(); 
         ctx.translate(imgX, imgY); 
@@ -68,38 +68,45 @@
         ctx.restore();
     }
     
-    // 2. Draw the frame SECOND
+    // 2. Draw Frame (Middle Layer)
     ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
     
-    // 3. Draw the Name THIRD (Top layer)
+    // 3. Draw Name (Top Layer - Aligned to the first gold bar)
     const name = userNameInput.value.toUpperCase();
     if(name) {
         let size = 65; 
         ctx.font = `bold ${size}px Georgia`;
+        // Auto-shrink logic for long names
         while(ctx.measureText(name).width > canvas.width * 0.8 && size > 20) { 
             size -= 2; ctx.font = `bold ${size}px Georgia`; 
         }
         
-        const grad = ctx.createLinearGradient(0, 750, 0, 850);
+        // Metallic Gradient for the Name
+        const grad = ctx.createLinearGradient(0, 1050, 0, 1150);
         grad.addColorStop(0, "#f3cc7a"); grad.addColorStop(0.5, "#c5a059"); grad.addColorStop(1, "#8e6d2b");
         
         ctx.fillStyle = grad; 
         ctx.strokeStyle = "black"; ctx.lineWidth = 4;
         ctx.textAlign = "center"; 
-        ctx.strokeText(name, 500, 800); 
-        ctx.fillText(name, 500, 800);
+        
+        // --- POSITION: Centered on the TOP gold bar ---
+        ctx.strokeText(name, 500, 1125); 
+        ctx.fillText(name, 500, 1125);
     }
     
-    // 4. Draw Categories FOURTH (Top layer)
+    // 4. Draw Categories (Top Layer - Aligned to the bottom gold bar)
     const cats = Array.from(document.querySelectorAll('.cat-check:checked')).map(c => c.value);
     if(cats.length > 0) {
+        // Black text provides the best contrast on the solid gold bar
         ctx.fillStyle = "black"; 
         ctx.font = "bold 30px Arial";
         ctx.textAlign = "center";
-        ctx.fillText(cats.slice(0, 2).join(" • "), 500, 940);
+        
+        // --- POSITION: Centered on the BOTTOM gold bar ---
+        // We join them with a dot to keep it on one line
+        ctx.fillText(cats.slice(0, 2).join(" • "), 500, 1375);
     }
 }
-
     upload.onchange = (e) => {
         const reader = new FileReader();
         reader.onload = (event) => { userImg.onload = () => { isLoaded = true; draw(); }; userImg.src = event.target.result; };
@@ -114,3 +121,4 @@
 </body>
 
 </html>
+
