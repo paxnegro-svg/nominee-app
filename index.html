@@ -51,6 +51,7 @@
 <script>
     const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
     const upload = document.getElementById('upload'), userNameInput = document.getElementById('userName'), catBox = document.getElementById('catBox');
+    const zoomSlider = document.getElementById('zoomSlider'); // Defined here
     
     const categories = ["URBAN X HOTTIE", "URBAN X STUD", "ORGASMIC ORALIST", "TALENTED TONGUE", "MOST AMAZING ASS", "MOST BEAUTIFUL BREAST", "MOST HUNG MALE STAR", "SEXIEST BBW STAR", "SEXIEST TRANS STAR", "MOST POPULAR BBW STAR", "MOST POPULAR TRANS STAR", "HOTTEST FETISH STAR", "HOTTEST INKED STAR FEMALE", "HOTTEST INKED STAR MALE", "MOST POPULAR POV MALE STAR", "RISING STAR FEMALE", "BEST MALE NEWCOMER", "MOST POPULAR PR COMPANY", "MOST POPULAR PODCAST/RADIO SHOW", "MOST POPULAR TALENT AGENCY", "MOST SUPPORTIVE SPONSOR", "MOST POPULAR CONTENT CREATOR PLATFORM", "MOST POPULAR WEB CAM COMPANY", "MOST POPULAR WEB CAM MODEL", "SOCIAL MEDIA STAR (MALE)", "SOCIAL MEDIA STAR (FEMALE)", "FAN FAVORITE MALE CREATOR", "FAN FAVORITE FEMALE CREATOR", "FAN FAVORITE BBW CREATOR", "FAN FAVORITE TRANS CREATOR", "FAN FAVORITE GAY CREATOR", "MOST POPULAR NOVELTY COMPANY", "BEST EVENT PHOTOGRAPHER", "FAN FAVORITE PRO-AM MALE", "FAN FAVORITE PRO-AM FEMALE", "MOST POPULAR PRO-AM STUDIO", "BEST NEW ALT MODEL", "ALT MODEL OF THE YEAR", "SPECTACULAR SQUIRTING STAR", "FEMALE PERFORMER OF THE YEAR", "MALE PERFORMER OF THE YEAR", "ANAL PERFORMER OF THE YEAR", "GAY PERFORMER OF THE YEAR", "TRANSGENDER PERFORMER OF THE YEAR", "MILF PERFORMER OF THE YEAR", "TRANS MASCULINE PERFORMER", "PANSEXUAL PERFORMER OF THE YEAR", "FAN FAVORITE DIRECTOR", "MOST POPULAR NEW STUDIO", "MOST POPULAR STUDIO", "BEST ACTRESS", "BEST ACTOR", "BEST COUPLE SEX SCENE", "BEST GIRL GIRL SCENE", "BEST GANG BANG SCENE", "BEST ORAL SCENE", "INDUSTRY FAVORITE COUPLE", "MR. GOOD STROKE", "MISS PRETTY KITTY", "PORN STAR-NEXT-DOOR", "MUSIC ARTIST, MALE", "MUSIC ARTIST, FEMALE"];
 
@@ -59,15 +60,18 @@
     let userImg = new Image(), frameImg = new Image(), isLoaded = false;
     let imgX = 500, imgY = 600, imgScale = 1;
     
-    // Crucial: Use the PNG version for transparency!
     frameImg.src = 'frame.png'; 
     frameImg.onload = draw;
 
     function draw() {
         ctx.clearRect(0,0,1000,1500);
+        // Corrected Scaling Logic inside draw
         if(isLoaded) {
-            ctx.save(); ctx.translate(imgX, imgY); ctx.scale(imgScale, imgScale);
-            ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2); ctx.restore();
+            ctx.save(); 
+            ctx.translate(imgX, imgY); 
+            ctx.scale(imgScale, imgScale); 
+            ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2); 
+            ctx.restore();
         }
         ctx.drawImage(frameImg, 0, 0, 1000, 1500);
         
@@ -81,46 +85,45 @@
             ctx.textAlign = "center"; ctx.textBaseline = "middle";
             ctx.strokeText(name, 500, 1125); ctx.fillText(name, 500, 1125);
         }
+        
+        // Updated Category Loop for White Text and 4 lines
         const cats = Array.from(document.querySelectorAll('.cat-check:checked')).map(c => c.value);
         if(cats.length > 0) {
-            ctx.fillStyle = "black"; ctx.font = "bold 34px Arial";
-            ctx.textAlign = "center"; ctx.textBaseline = "middle";
-            ctx.fillText(cats[0], 500, 1378);
+            ctx.fillStyle = "white"; 
+            ctx.font = "bold 26px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            cats.slice(0, 4).forEach((cat, index) => {
+                ctx.fillText(cat, 500, 1320 + (index * 40));
+            });
         }
     }
 
+    // Event Listeners
     upload.onchange = (e) => {
         const r = new FileReader();
         r.onload = (ev) => { userImg.onload = () => { isLoaded = true; draw(); }; userImg.src = ev.target.result; };
         r.readAsDataURL(e.target.files[0]);
     };
+    
+    zoomSlider.oninput = (e) => { imgScale = parseFloat(e.target.value); draw(); };
     catBox.onchange = draw;
     userNameInput.oninput = draw;
 
-    // Improved Drag Logic for Mobile
+    // Drag Logic
     let isDragging = false, lastX, lastY;
-
     function getCoords(e) {
         const rect = canvas.getBoundingClientRect();
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return {
-            x: (clientX - rect.left) * (canvas.width / rect.width),
-            y: (clientY - rect.top) * (canvas.height / rect.height)
-        };
+        return { x: (clientX - rect.left) * (canvas.width / rect.width), y: (clientY - rect.top) * (canvas.height / rect.height) };
     }
 
-    function startDrag(e) {
-        isDragging = true;
-        const coords = getCoords(e);
-        lastX = coords.x; lastY = coords.y;
-    }
-
+    function startDrag(e) { isDragging = true; const coords = getCoords(e); lastX = coords.x; lastY = coords.y; }
     function moveDrag(e) {
         if (!isDragging) return;
         const coords = getCoords(e);
-        imgX += (coords.x - lastX);
-        imgY += (coords.y - lastY);
+        imgX += (coords.x - lastX); imgY += (coords.y - lastY);
         lastX = coords.x; lastY = coords.y;
         draw();
     }
@@ -128,37 +131,18 @@
     canvas.addEventListener('mousedown', startDrag);
     window.addEventListener('mousemove', moveDrag);
     window.addEventListener('mouseup', () => isDragging = false);
-    
     canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(e); }, {passive:false});
     canvas.addEventListener('touchmove', (e) => { e.preventDefault(); moveDrag(e); }, {passive:false});
     canvas.addEventListener('touchend', () => isDragging = false);
 
     document.getElementById('saveBtn').onclick = () => {
         const link = document.createElement('a'); 
-        link.download = 'UrbanX-Nominee.png'; 
-        link.href = canvas.toDataURL('image/png'); 
-        link.click();
+        link.download = 'Nominee.png'; link.href = canvas.toDataURL('image/png'); link.click();
     };
-    const zoomSlider = document.getElementById('zoomSlider');
-
-// When slider moves, update scale and redraw
-zoomSlider.oninput = (e) => {
-    imgScale = parseFloat(e.target.value);
-    draw();
-};
-
-// Update your draw() function's photo layer to use imgScale:
-// Look for this inside function draw() { ... }
-if(isLoaded) {
-    ctx.save(); 
-    ctx.translate(imgX, imgY); 
-    ctx.scale(imgScale, imgScale); // This now uses the slider value
-    ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2); 
-    ctx.restore();
-}
 </script>
 </body>
 </html>
+
 
 
 
