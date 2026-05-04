@@ -53,8 +53,7 @@
     let userImg = new Image(), frameImg = new Image(), isLoaded = false;
     let imgX = 540, imgY = 540, imgScale = 1;
     
-    // RENAME THIS TO MATCH YOUR NEW FILENAME ON GITHUB
-    frameImg.src = 'Nominee-Frame.png'; 
+    frameImg.src = 'Nominee-Frame.jpg'; 
     frameImg.onload = draw;
 
     function draw() {
@@ -63,8 +62,6 @@
         if(isLoaded) {
             ctx.save();
             ctx.translate(imgX, imgY);
-            // Apply slight rotation to photo to match tilted frame if desired
-            // ctx.rotate(-7 * Math.PI / 180); 
             ctx.scale(imgScale, imgScale);
             ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2);
             ctx.restore();
@@ -72,32 +69,35 @@
         
         ctx.drawImage(frameImg, 0, 0, 1080, 1080);
         
-        // NAME TEXT (Tilted to match "2026 Nominee")
+        // NAME TEXT (Lowered and Tilted)
         const name = userNameInput.value.toUpperCase();
         if(name) {
             ctx.save();
-            ctx.translate(330, 155); // Position next to "2026 NOMINEE"
-            ctx.rotate(-7 * Math.PI / 180); // Match frame tilt
+            // Moved Y from 155 to 195 to bring it down
+            ctx.translate(330, 195); 
+            ctx.rotate(-7.5 * Math.PI / 180); 
             
-            let size = 55; ctx.font = `bold ${size}px Arial`;
+            let size = 60; ctx.font = `bold ${size}px Arial`;
             const grad = ctx.createLinearGradient(0, -30, 0, 30);
             grad.addColorStop(0, "#ffffff"); grad.addColorStop(1, "#f3cc7a");
             
             ctx.fillStyle = grad;
             ctx.textAlign = "left";
             ctx.shadowColor = "rgba(0,0,0,0.8)";
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 8;
             ctx.fillText(name, 0, 0);
             ctx.restore();
         }
         
-        // CATEGORY TEXT (Bottom Right)
+        // CATEGORY TEXT (Bottom Right - Now in Gold)
         const selectedCat = catDropdown.value;
         if(selectedCat) {
-            ctx.fillStyle = "white";
-            ctx.font = "bold 30px Arial";
+            ctx.fillStyle = "#f3cc7a"; 
+            ctx.font = "bold 38px Arial";
             ctx.textAlign = "right";
-            ctx.fillText(selectedCat, 1030, 1030);
+            ctx.shadowColor = "black";
+            ctx.shadowBlur = 5;
+            ctx.fillText(selectedCat, 1040, 1040);
         }
     }
 
