@@ -3,50 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Urban X Awards - Nominee Creator</title>
+    <title>Urban X Awards - 2026 Nominee Creator</title>
     <style>
         :root { --gold: #f3cc7a; --dark: #1a1a1a; --bg: #0f0f0f; }
-        /* Layout fixes for mobile cutoff */
         html, body { overflow: hidden; position: fixed; width: 100%; height: 100%; }
         body { font-family: 'Georgia', serif; display: flex; flex-direction: column; align-items: center; background: var(--bg); color: white; margin: 0; padding: 10px; box-sizing: border-box; }
-        
-        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; height: 100%; }
-        
+        .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; }
         .controls { background: var(--dark); padding: 12px; border-radius: 12px; border: 1px solid #333; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
-        
         label { font-size: 11px; font-weight: bold; color: var(--gold); text-transform: uppercase; }
         input[type="text"], input[type="file"], select { width: 100%; padding: 8px; border: 1px solid #444; border-radius: 6px; background: #222; color: white; font-size: 14px; box-sizing: border-box; }
-        
-        /* The Canvas Container scales to fit remaining space */
-        .canvas-container { flex-grow: 1; position: relative; width: 100%; overflow: hidden; border: 1px solid var(--gold); background: #000; display: flex; justify-content: center; align-items: flex-start; }
-        
-        canvas { max-width: 100%; max-height: 100%; object-fit: contain; touch-action: none; -webkit-user-select: none; }
-        
-        #saveBtn { padding: 14px; background: var(--gold); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: black; margin-top: 5px; font-size: 14px; }
+        .canvas-container { flex-grow: 1; position: relative; width: 100%; overflow: hidden; border: 1px solid var(--gold); background: #000; display: flex; justify-content: center; align-items: center; }
+        canvas { max-width: 100%; max-height: 100%; object-fit: contain; touch-action: none; }
+        #saveBtn { padding: 14px; background: var(--gold); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: black; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="controls">
-        <button id="saveBtn">DOWNLOAD NOMINEE CARD</button>
-
-        <div style="display:flex; gap:10px; margin-top: 5px;">
+        <button id="saveBtn">DOWNLOAD NOMINEE SQUARE</button>
+        <div style="display:flex; gap:10px;">
             <div style="flex:1;"><label>Photo</label><input type="file" id="upload" accept="image/*"></div>
-            <div style="flex:1;"><label>Name</label><input type="text" id="userName" placeholder="NAME" maxlength="25"></div>
+            <div style="flex:1;"><label>Name</label><input type="text" id="userName" placeholder="ENTER NAME" maxlength="20"></div>
         </div>
-
         <div style="display:flex; flex-direction:column; gap:2px;">
-            <label>Zoom Photo</label>
-            <input type="range" id="zoomSlider" min="0.1" max="3" step="0.05" value="1">
+            <label>Zoom & Position: Drag Photo to Align</label>
+            <input type="range" id="zoomSlider" min="0.1" max="3" step="0.01" value="1">
         </div>
-
         <label>Nomination Category</label>
-        <select id="catDropdown">
-            <option value="">-- Select a Category --</option>
-        </select>
+        <select id="catDropdown"><option value="">-- Select Category --</option></select>
     </div>
-    
     <div class="canvas-container">
         <canvas id="canvas" width="1080" height="1080"></canvas>
     </div>
@@ -59,66 +45,62 @@
     
     const categories = ["URBAN X HOTTIE", "URBAN X STUD", "ORGASMIC ORALIST", "TALENTED TONGUE", "MOST AMAZING ASS", "MOST BEAUTIFUL BREAST", "MOST HUNG MALE STAR", "SEXIEST BBW STAR", "SEXIEST TRANS STAR", "MOST POPULAR BBW STAR", "MOST POPULAR TRANS STAR", "HOTTEST FETISH STAR", "HOTTEST INKED STAR FEMALE", "HOTTEST INKED STAR MALE", "MOST POPULAR POV MALE STAR", "RISING STAR FEMALE", "BEST MALE NEWCOMER", "MOST POPULAR PR COMPANY", "MOST POPULAR PODCAST/RADIO SHOW", "MOST POPULAR TALENT AGENCY", "MOST SUPPORTIVE SPONSOR", "MOST POPULAR CONTENT CREATOR PLATFORM", "MOST POPULAR WEB CAM COMPANY", "MOST POPULAR WEB CAM MODEL", "SOCIAL MEDIA STAR (MALE)", "SOCIAL MEDIA STAR (FEMALE)", "FAN FAVORITE MALE CREATOR", "FAN FAVORITE FEMALE CREATOR", "FAN FAVORITE BBW CREATOR", "FAN FAVORITE TRANS CREATOR", "FAN FAVORITE GAY CREATOR", "MOST POPULAR NOVELTY COMPANY", "BEST EVENT PHOTOGRAPHER", "FAN FAVORITE PRO-AM MALE", "FAN FAVORITE PRO-AM FEMALE", "MOST POPULAR PRO-AM STUDIO", "BEST NEW ALT MODEL", "ALT MODEL OF THE YEAR", "SPECTACULAR SQUIRTING STAR", "FEMALE PERFORMER OF THE YEAR", "MALE PERFORMER OF THE YEAR", "ANAL PERFORMER OF THE YEAR", "GAY PERFORMER OF THE YEAR", "TRANSGENDER PERFORMER OF THE YEAR", "MILF PERFORMER OF THE YEAR", "TRANS MASCULINE PERFORMER", "PANSEXUAL PERFORMER OF THE YEAR", "FAN FAVORITE DIRECTOR", "MOST POPULAR NEW STUDIO", "MOST POPULAR STUDIO", "BEST ACTRESS", "BEST ACTOR", "BEST COUPLE SEX SCENE", "BEST GIRL GIRL SCENE", "BEST GANG BANG SCENE", "BEST ORAL SCENE", "INDUSTRY FAVORITE COUPLE", "MR. GOOD STROKE", "MISS PRETTY KITTY", "PORN STAR-NEXT-DOOR", "MUSIC ARTIST, MALE", "MUSIC ARTIST, FEMALE"];
 
-    // Populate the dropdown
     categories.forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat;
-        opt.textContent = cat;
+        const opt = document.createElement('option'); opt.value = cat; opt.textContent = cat;
         catDropdown.appendChild(opt);
     });
 
     let userImg = new Image(), frameImg = new Image(), isLoaded = false;
-    let imgX = 500, imgY = 600, imgScale = 1;
+    let imgX = 540, imgY = 540, imgScale = 1;
     
-    // Ensure frame.png is in the same folder on GitHub
+    // RENAME THIS TO MATCH YOUR NEW FILENAME ON GITHUB
     frameImg.src = 'Nominee-Frame.png'; 
     frameImg.onload = draw;
 
     function draw() {
-        ctx.clearRect(0,0,1000,1500);
+        ctx.clearRect(0,0,1080,1080);
         
-        // 1. Photo Layer
         if(isLoaded) {
-            ctx.save(); 
-            ctx.translate(imgX, imgY); 
-            ctx.scale(imgScale, imgScale); 
-            ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2); 
+            ctx.save();
+            ctx.translate(imgX, imgY);
+            // Apply slight rotation to photo to match tilted frame if desired
+            // ctx.rotate(-7 * Math.PI / 180); 
+            ctx.scale(imgScale, imgScale);
+            ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2);
             ctx.restore();
         }
         
-        // 2. Frame Layer
-        ctx.drawImage(frameImg, 0, 0, 1000, 1500);
+        ctx.drawImage(frameImg, 0, 0, 1080, 1080);
         
-        // 3. Name Text
+        // NAME TEXT (Tilted to match "2026 Nominee")
         const name = userNameInput.value.toUpperCase();
         if(name) {
-            let size = 65; ctx.font = `bold ${size}px Georgia`;
-            while(ctx.measureText(name).width > 800 && size > 20) { size -= 2; ctx.font = `bold ${size}px Georgia`; }
+            ctx.save();
+            ctx.translate(330, 155); // Position next to "2026 NOMINEE"
+            ctx.rotate(-7 * Math.PI / 180); // Match frame tilt
             
-            const grad = ctx.createLinearGradient(0, 1050, 0, 1180);
-            grad.addColorStop(0, "#f3cc7a"); grad.addColorStop(0.5, "#c5a059"); grad.addColorStop(1, "#8e6d2b");
+            let size = 55; ctx.font = `bold ${size}px Arial`;
+            const grad = ctx.createLinearGradient(0, -30, 0, 30);
+            grad.addColorStop(0, "#ffffff"); grad.addColorStop(1, "#f3cc7a");
             
-            ctx.fillStyle = grad; 
-            ctx.strokeStyle = "black"; 
-            ctx.lineWidth = 4;
-            ctx.textAlign = "center"; 
-            ctx.textBaseline = "middle";
-            ctx.strokeText(name, 500, 1125); 
-            ctx.fillText(name, 500, 1125);
+            ctx.fillStyle = grad;
+            ctx.textAlign = "left";
+            ctx.shadowColor = "rgba(0,0,0,0.8)";
+            ctx.shadowBlur = 10;
+            ctx.fillText(name, 0, 0);
+            ctx.restore();
         }
         
-        // 4. Category Text
+        // CATEGORY TEXT (Bottom Right)
         const selectedCat = catDropdown.value;
         if(selectedCat) {
-            ctx.fillStyle = "white"; 
-            ctx.font = "bold 34px Arial";
-            ctx.textAlign = "center"; 
-            ctx.textBaseline = "middle";
-            ctx.fillText(selectedCat, 500, 1378);
+            ctx.fillStyle = "white";
+            ctx.font = "bold 30px Arial";
+            ctx.textAlign = "right";
+            ctx.fillText(selectedCat, 1030, 1030);
         }
     }
 
-    // Input Listeners
     upload.onchange = (e) => {
         const r = new FileReader();
         r.onload = (ev) => { userImg.onload = () => { isLoaded = true; draw(); }; userImg.src = ev.target.result; };
@@ -129,25 +111,19 @@
     catDropdown.onchange = draw;
     userNameInput.oninput = draw;
 
-    // Advanced Drag Logic for Mobile/Desktop
     let isDragging = false, lastX, lastY;
-
     function getCoords(e) {
         const rect = canvas.getBoundingClientRect();
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return {
-            x: (clientX - rect.left) * (canvas.width / rect.width),
-            y: (clientY - rect.top) * (canvas.height / rect.height)
-        };
+        return { x: (clientX - rect.left) * (1080 / rect.width), y: (clientY - rect.top) * (1080 / rect.height) };
     }
 
     function startDrag(e) { isDragging = true; const coords = getCoords(e); lastX = coords.x; lastY = coords.y; }
     function moveDrag(e) {
         if (!isDragging) return;
         const coords = getCoords(e);
-        imgX += (coords.x - lastX);
-        imgY += (coords.y - lastY);
+        imgX += (coords.x - lastX); imgY += (coords.y - lastY);
         lastX = coords.x; lastY = coords.y;
         draw();
     }
@@ -155,16 +131,14 @@
     canvas.addEventListener('mousedown', startDrag);
     window.addEventListener('mousemove', moveDrag);
     window.addEventListener('mouseup', () => isDragging = false);
-    
     canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(e); }, {passive:false});
     canvas.addEventListener('touchmove', (e) => { e.preventDefault(); moveDrag(e); }, {passive:false});
     canvas.addEventListener('touchend', () => isDragging = false);
 
-    // Save/Download Logic
     document.getElementById('saveBtn').onclick = () => {
-        const link = document.createElement('a'); 
-        link.download = 'UrbanX-Nominee.png'; 
-        link.href = canvas.toDataURL('image/png'); 
+        const link = document.createElement('a');
+        link.download = 'UrbanX-2026.png';
+        link.href = canvas.toDataURL('image/png');
         link.click();
     };
 </script>
