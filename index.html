@@ -53,6 +53,7 @@
     let userImg = new Image(), frameImg = new Image(), isLoaded = false;
     let imgX = 540, imgY = 540, imgScale = 1;
     
+    // Using the file name from your repo
     frameImg.src = 'Nominee-Frame.png'; 
     frameImg.onload = draw;
 
@@ -73,11 +74,9 @@
         const name = userNameInput.value.toUpperCase();
         if(name) {
             ctx.save();
-            // Centered horizontally at 540, placed vertically at 740 right above the logo space
-            ctx.translate(540, 740); 
+            ctx.translate(540, 680); // Adjusted slightly up to accommodate larger category spacing if needed
             
             let size = 65; ctx.font = `bold ${size}px Arial`;
-            // Dynamic text scaling to prevent layout breaking
             while(ctx.measureText(name).width > 800 && size > 20) { size -= 2; ctx.font = `bold ${size}px Arial`; }
             
             const grad = ctx.createLinearGradient(0, -30, 0, 30);
@@ -85,7 +84,7 @@
             
             ctx.fillStyle = grad;
             ctx.strokeStyle = "black";
-            ctx.lineWidth = 6; // Strong border to clear background stars
+            ctx.lineWidth = 6;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             
@@ -94,15 +93,21 @@
             ctx.restore();
         }
         
-        // CATEGORY TEXT (Bottom Right)
+        // CATEGORY TEXT (Bottom Right - Increased size)
         const selectedCat = catDropdown.value;
         if(selectedCat) {
+            ctx.save();
             ctx.fillStyle = "#f3cc7a"; 
-            ctx.font = "bold 38px Arial";
+            ctx.font = "bold 48px Arial"; // Bumped up from 38px
             ctx.textAlign = "right";
-            ctx.shadowColor = "black";
-            ctx.shadowBlur = 5;
-            ctx.fillText(selectedCat, 1040, 1040);
+            
+            // Text stroke for cleaner readability against the city sparks background
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 5;
+            
+            ctx.strokeText(selectedCat, 1030, 1030);
+            ctx.fillText(selectedCat, 1030, 1030);
+            ctx.restore();
         }
     }
 
