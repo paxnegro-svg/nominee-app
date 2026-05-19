@@ -74,7 +74,7 @@
         if(name) {
             ctx.save();
             // Moved Y from 155 to 195 to bring it down
-            ctx.translate(330, 195); 
+            ctx.translate(330, 305); 
             ctx.rotate(-7.5 * Math.PI / 180); 
             
             let size = 60; ctx.font = `bold ${size}px Arial`;
@@ -93,7 +93,7 @@
         const selectedCat = catDropdown.value;
         if(selectedCat) {
             ctx.fillStyle = "#f3cc7a"; 
-            ctx.font = "bold 100px Arial";
+            ctx.font = "bold 50px Arial";
             ctx.textAlign = "right";
             ctx.shadowColor = "black";
             ctx.shadowBlur = 5;
