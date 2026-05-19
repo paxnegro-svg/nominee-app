@@ -53,7 +53,7 @@
     let userImg = new Image(), frameImg = new Image(), isLoaded = false;
     let imgX = 540, imgY = 540, imgScale = 1;
     
-    frameImg.src = 'Nominee-Frame.png'; 
+    frameImg.src = 'Nominee-Frame.jpg'; 
     frameImg.onload = draw;
 
     function draw() {
@@ -74,7 +74,7 @@
         if(name) {
             ctx.save();
             // Moved Y from 155 to 195 to bring it down
-            ctx.translate(330, 305); 
+            ctx.translate(330, 195); 
             ctx.rotate(-7.5 * Math.PI / 180); 
             
             let size = 60; ctx.font = `bold ${size}px Arial`;
@@ -93,7 +93,7 @@
         const selectedCat = catDropdown.value;
         if(selectedCat) {
             ctx.fillStyle = "#f3cc7a"; 
-            ctx.font = "bold 50px Arial";
+            ctx.font = "bold 38px Arial";
             ctx.textAlign = "right";
             ctx.shadowColor = "black";
             ctx.shadowBlur = 5;
