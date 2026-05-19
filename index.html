@@ -69,27 +69,32 @@
         
         ctx.drawImage(frameImg, 0, 0, 1080, 1080);
         
-        // NAME TEXT (Lowered and Tilted)
+        // NAME TEXT (Centered straight above the Urban X Logo)
         const name = userNameInput.value.toUpperCase();
         if(name) {
             ctx.save();
-            // Moved Y from 155 to 195 to bring it down
-            ctx.translate(330, 195); 
-            ctx.rotate(-7.5 * Math.PI / 180); 
+            // Centered horizontally at 540, placed vertically at 740 right above the logo space
+            ctx.translate(540, 740); 
             
-            let size = 60; ctx.font = `bold ${size}px Arial`;
+            let size = 65; ctx.font = `bold ${size}px Arial`;
+            // Dynamic text scaling to prevent layout breaking
+            while(ctx.measureText(name).width > 800 && size > 20) { size -= 2; ctx.font = `bold ${size}px Arial`; }
+            
             const grad = ctx.createLinearGradient(0, -30, 0, 30);
             grad.addColorStop(0, "#ffffff"); grad.addColorStop(1, "#f3cc7a");
             
             ctx.fillStyle = grad;
-            ctx.textAlign = "left";
-            ctx.shadowColor = "rgba(0,0,0,0.8)";
-            ctx.shadowBlur = 8;
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 6; // Strong border to clear background stars
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            
+            ctx.strokeText(name, 0, 0);
             ctx.fillText(name, 0, 0);
             ctx.restore();
         }
         
-        // CATEGORY TEXT (Bottom Right - Now in Gold)
+        // CATEGORY TEXT (Bottom Right)
         const selectedCat = catDropdown.value;
         if(selectedCat) {
             ctx.fillStyle = "#f3cc7a"; 
