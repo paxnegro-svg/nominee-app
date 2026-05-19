@@ -83,7 +83,7 @@
             
             ctx.fillStyle = grad;
             ctx.strokeStyle = "black";
-            ctx.lineWidth = 8; // Heavy stroke to cleanly pop over the logo asset
+            ctx.lineWidth = 8; 
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             
@@ -92,19 +92,21 @@
             ctx.restore();
         }
         
-        // CATEGORY TEXT (Now placed cleanly at the top right)
+        // CATEGORY TEXT (Centered and sized down to fit the top space seamlessly)
         const selectedCat = catDropdown.value;
         if(selectedCat) {
             ctx.save();
             ctx.fillStyle = "#f3cc7a"; 
-            ctx.font = "bold 44px Arial"; 
-            ctx.textAlign = "right";
+            ctx.font = "bold 28px Arial"; // Sized down to ensure text bounds stay inside the frame width
+            ctx.textAlign = "center"; // Changed to center alignment
+            ctx.textBaseline = "top";
             
             ctx.strokeStyle = "black";
-            ctx.lineWidth = 6;
+            ctx.lineWidth = 5;
             
-            ctx.strokeText(selectedCat, 1045, 50);
-            ctx.fillText(selectedCat, 1045, 50);
+            // Placed horizontally at 540 (exact center of the 1080 canvas) and 45px from the top margin
+            ctx.strokeText(selectedCat, 540, 45);
+            ctx.fillText(selectedCat, 540, 45);
             ctx.restore();
         }
     }
