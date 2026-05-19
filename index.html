@@ -53,6 +53,7 @@
     let userImg = new Image(), frameImg = new Image(), isLoaded = false;
     let imgX = 540, imgY = 540, imgScale = 1;
     
+    // Updated to point to your new layout image asset
     frameImg.src = '2026-Nominee-Frame.png'; 
     frameImg.onload = draw;
 
@@ -69,11 +70,11 @@
         
         ctx.drawImage(frameImg, 0, 0, 1080, 1080);
         
-        // 1. NOMINEE NAME (Centered straight at the top)
+        // 1. NOMINEE NAME (Centered at the bottom below the gold frame box)
         const name = userNameInput.value.toUpperCase();
         if(name) {
             ctx.save();
-            ctx.translate(540, 110); 
+            ctx.translate(540, 840); 
             
             let size = 65; ctx.font = `bold ${size}px Arial`;
             while(ctx.measureText(name).width > 850 && size > 20) { size -= 2; ctx.font = `bold ${size}px Arial`; }
@@ -92,19 +93,19 @@
             ctx.restore();
         }
         
-        // 2. CATEGORY TEXT (Centered straight at the top, right below the name)
+        // 2. CATEGORY TEXT (Centered at the bottom directly beneath the name)
         const selectedCat = catDropdown.value;
         if(selectedCat) {
             ctx.save();
-            ctx.translate(540, 175);
+            ctx.translate(540, 920);
             
             ctx.fillStyle = "#f3cc7a"; 
-            ctx.font = "bold 28px Arial"; 
+            ctx.font = "bold 32px Arial"; 
             ctx.textAlign = "center"; 
             ctx.textBaseline = "middle";
             
             ctx.strokeStyle = "black";
-            ctx.lineWidth = 5;
+            ctx.lineWidth = 6;
             
             ctx.strokeText(selectedCat, 0, 0);
             ctx.fillText(selectedCat, 0, 0);
