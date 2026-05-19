@@ -53,8 +53,7 @@
     let userImg = new Image(), frameImg = new Image(), isLoaded = false;
     let imgX = 540, imgY = 540, imgScale = 1;
     
-    // Using the file name from your repo
-    frameImg.src = 'Nominee-Frame.png'; 
+    frameImg.src = 'Nominee-Frame.jpg'; 
     frameImg.onload = draw;
 
     function draw() {
@@ -70,21 +69,21 @@
         
         ctx.drawImage(frameImg, 0, 0, 1080, 1080);
         
-        // NAME TEXT (Centered straight above the Urban X Logo)
+        // NAME TEXT (Centered straight, lowered right above "Awards")
         const name = userNameInput.value.toUpperCase();
         if(name) {
             ctx.save();
-            ctx.translate(540, 680); // Adjusted slightly up to accommodate larger category spacing if needed
+            ctx.translate(540, 840); 
             
             let size = 65; ctx.font = `bold ${size}px Arial`;
-            while(ctx.measureText(name).width > 800 && size > 20) { size -= 2; ctx.font = `bold ${size}px Arial`; }
+            while(ctx.measureText(name).width > 850 && size > 20) { size -= 2; ctx.font = `bold ${size}px Arial`; }
             
             const grad = ctx.createLinearGradient(0, -30, 0, 30);
             grad.addColorStop(0, "#ffffff"); grad.addColorStop(1, "#f3cc7a");
             
             ctx.fillStyle = grad;
             ctx.strokeStyle = "black";
-            ctx.lineWidth = 6;
+            ctx.lineWidth = 8; // Heavy stroke to cleanly pop over the logo asset
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             
@@ -93,20 +92,19 @@
             ctx.restore();
         }
         
-        // CATEGORY TEXT (Bottom Right - Increased size)
+        // CATEGORY TEXT (Now placed cleanly at the top right)
         const selectedCat = catDropdown.value;
         if(selectedCat) {
             ctx.save();
             ctx.fillStyle = "#f3cc7a"; 
-            ctx.font = "bold 58px Arial"; // Bumped up from 38px
+            ctx.font = "bold 44px Arial"; 
             ctx.textAlign = "right";
             
-            // Text stroke for cleaner readability against the city sparks background
             ctx.strokeStyle = "black";
-            ctx.lineWidth = 5;
+            ctx.lineWidth = 6;
             
-            ctx.strokeText(selectedCat, 1030, 1030);
-            ctx.fillText(selectedCat, 1030, 1030);
+            ctx.strokeText(selectedCat, 1045, 50);
+            ctx.fillText(selectedCat, 1045, 50);
             ctx.restore();
         }
     }
